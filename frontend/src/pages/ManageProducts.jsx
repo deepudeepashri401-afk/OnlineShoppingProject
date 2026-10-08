@@ -1,28 +1,51 @@
+import React from "react";
 import { useEffect, useState } from "react";
 import { addProduct, deleteProduct, getProducts } from "../services/api";
 
 export default function ManageProducts() {
   const [products, setProducts] = useState([]);
-  const [form, setForm] = useState({ name: "", category: "", price: "", stock: "", active: true });
-
+const [form, setForm] = useState({
+  name: "",
+  category: "",
+  price: "",
+  stock: "",
+  image: "",
+  active: true
+});
   const load = () => getProducts().then((r) => setProducts(r.data)).catch(() => setProducts([]));
-  useEffect(load, []);
+  // useEffect(load, []);
+useEffect(() => {
+  load();
+}, []);
 
   const submit = async (e) => {
     e.preventDefault();
     await addProduct({ ...form, price: Number(form.price), stock: Number(form.stock) });
-    setForm({ name: "", category: "", price: "", stock: "", active: true });
+    // setForm({ name: "", category: "", price: "", stock: "", active: true });
+    setForm({
+  name: "",
+  category: "",
+  price: "",
+  stock: "",
+  image: "",
+  active: true
+});
     load();
   };
 
   return (
     <section>
-      <h2>Manage Products</h2>
+      <h2>Manage Products -TEST</h2>
       <form className="inline-form" onSubmit={submit}>
         <input placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
         <input placeholder="Category" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} required />
         <input type="number" placeholder="Price" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} required />
         <input type="number" placeholder="Stock" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} required />
+        <input
+  placeholder="Image URL"
+  value={form.image}
+  onChange={(e) => setForm({ ...form, image: e.target.value })}
+/>
         <button className="button">Add Product</button>
       </form>
 
