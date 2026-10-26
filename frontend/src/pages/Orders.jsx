@@ -1,16 +1,26 @@
+import React, { useEffect, useState } from "react";
+import { getOrders } from "../services/api";
+
 export default function Orders() {
-  const orders = [
-    { id: "ORD001", date: "20 Sep 2026", total: 2498, status: "PLACED" }
-  ];
+  const [orders, setOrders] = useState([]);
+
+  useEffect(() => {
+    getOrders()
+      .then((response) => setOrders(response.data))
+      .catch(() => setOrders([]));
+  }, []);
 
   return (
     <section>
       <h2>Order History</h2>
+
+      {!orders.length && <p>No orders found.</p>}
+
       {orders.map((order) => (
         <div className="order-row" key={order.id}>
-          <strong>{order.id}</strong>
-          <span>{order.date}</span>
-          <span>₹{order.total}</span>
+          <strong>ORD{order.id}</strong>
+          <span>{order.orderDate}</span>
+          <span>₹{order.totalAmount}</span>
           <span className="badge">{order.status}</span>
         </div>
       ))}

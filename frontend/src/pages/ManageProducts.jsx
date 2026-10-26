@@ -4,6 +4,7 @@ import { addProduct, deleteProduct, getProducts } from "../services/api";
 
 export default function ManageProducts() {
   const [products, setProducts] = useState([]);
+  const[search,setSearch]=useState("");
 const [form, setForm] = useState({
   name: "",
   category: "",
@@ -18,24 +19,41 @@ useEffect(() => {
   load();
 }, []);
 
+const filteredProduct= products.filter((p)=>{
+  return p.name.toLowerCase().includes(search.toLowerCase())
+}
+)
+                     
+
   const submit = async (e) => {
-    e.preventDefault();
-    await addProduct({ ...form, price: Number(form.price), stock: Number(form.stock) });
-    // setForm({ name: "", category: "", price: "", stock: "", active: true });
+  e.preventDefault();
+
+  try {
+    await addProduct({
+      ...form,
+      price: Number(form.price),
+      stock: Number(form.stock)
+    });
+
     setForm({
-  name: "",
-  category: "",
-  price: "",
-  stock: "",
-  image: "",
-  active: true
-});
+      name: "",
+      category: "",
+      price: "",
+      stock: "",
+      image: "",
+      active: true
+    });
+
     load();
-  };
+  } catch (error) {
+    alert("Failed to add product");
+  }
+};
 
   return (
     <section>
       <h2>Manage Products -TEST</h2>
+      <input type="text" placeholder="enter the products to search" value={search} onChange={(e)=>setSearch(e.target.value)}/>
       <form className="inline-form" onSubmit={submit}>
         <input placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
         <input placeholder="Category" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} required />
@@ -49,7 +67,7 @@ useEffect(() => {
         <button className="button">Add Product</button>
       </form>
 
-      {products.map((p) => (
+      {filteredProduct.map((p) => (
         <div className="order-row" key={p.id}>
           <span>{p.name}</span><span>₹{p.price}</span><span>Stock: {p.stock}</span>
           <button className="button danger" onClick={async () => { await deleteProduct(p.id); load(); }}>Delete</button>

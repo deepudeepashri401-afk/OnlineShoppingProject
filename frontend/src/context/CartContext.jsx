@@ -1,21 +1,37 @@
-import { createContext, useContext, useState } from "react";
+import  React,{ createContext, useContext, useState } from "react";
+import { addToCart as addToCartApi } from "../services/api";
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
 
-  const addToCart = (product) => {
-    setCart((current) => {
-      const existing = current.find((item) => item.id === product.id);
-      if (existing) {
-        return current.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
-        );
-      }
-      return [...current, { ...product, quantity: 1 }];
-    });
-  };
+ const addToCart = async (product) => {
+
+  const savedUser = JSON.parse(localStorage.getItem("user"));
+
+  if (!savedUser) {
+    alert("Please login first");
+    return;
+  }
+
+  await addToCartApi(savedUser.id, product.id, 1);
+
+  setCart((current) => {
+
+    const existing = current.find((item) => item.id === product.id);
+
+    if (existing) {
+      return current.map((item) =>
+        item.id === product.id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      );
+    }
+
+    return [...current, { ...product, quantity: 1 }];
+  });
+};
 
   const updateQuantity = (id, quantity) => {
     if (quantity < 1) {

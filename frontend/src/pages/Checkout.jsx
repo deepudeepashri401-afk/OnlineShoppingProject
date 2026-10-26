@@ -1,3 +1,5 @@
+import React from "react";
+import { placeOrder as placeOrderApi } from "../services/api";
 import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
 
@@ -5,12 +7,27 @@ export default function Checkout() {
   const { cart, total } = useCart();
   const navigate = useNavigate();
 
-  const placeOrder = (e) => {
-    e.preventDefault();
-    if (!cart.length) return;
+ const placeOrder = async (e) => {
+  e.preventDefault();
+
+  if (!cart.length) return;
+
+  const savedUser = JSON.parse(localStorage.getItem("user"));
+
+  if (!savedUser) {
+    alert("Please login first");
+    navigate("/login");
+    return;
+  }
+
+  try {
+    await placeOrderApi(savedUser.id, total);
     alert("Order placed successfully!");
     navigate("/orders");
-  };
+  } catch (error) {
+    alert("Failed to place order");
+  }
+};
 
   return (
     <form className="form-card" onSubmit={placeOrder}>

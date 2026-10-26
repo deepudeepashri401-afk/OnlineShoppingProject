@@ -1,9 +1,12 @@
+import React from "react";
 import { useState } from "react";
 import { registerUser } from "../services/api";
 import { useNavigate } from "react-router-dom";
 
 export default function Register() {
   const [form, setForm] = useState({ name: "", email: "", password: "", role: "CUSTOMER" });
+    // const [form, setForm] = useState({ name: "", email: "", password: "" });
+
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
@@ -15,9 +18,9 @@ export default function Register() {
       await registerUser(form);
       setMessage("Registration successful. Please login.");
       setTimeout(() => navigate("/login"), 700);
-    } catch {
-      setMessage("Backend is not available. You can still continue with the frontend demo.");
-    }
+    }  catch {
+  setMessage("Registration failed. Please try again.");
+}
   };
 
   return (
